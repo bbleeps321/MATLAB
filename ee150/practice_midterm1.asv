@@ -1,0 +1,9 @@
+r = .9;
+dt = .1;
+T = 5;
+N = zeros(1,1);
+N(1) = 10e11;
+
+for (i=1:T*dt)
+    N(i+1) = N(i) + r*N(i)*dt;
+end

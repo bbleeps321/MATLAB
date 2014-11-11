@@ -1,0 +1,10 @@
+w = 0:pi/100:2*pi;
+z = exp(j*w);
+H_ideal = 1-z.^-1;
+H = (1-z.^-1)./(1+7*z.^-1); 
+% H = ((1-z.^-1)./(1+1/7*z.^-1));%.*((1+1/7*z.^-1)/(1+7*z.^-1));
+plot(w,abs(H_ideal),'b');
+hold on;
+plot(w,abs(H),'r');
+xlabel('\omega'); ylabel('|H|'); title('Ideal vs Non-ideal Differentiator');
+legend('Ideal','Digital');

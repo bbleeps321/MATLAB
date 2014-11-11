@@ -1,0 +1,12 @@
+f = -.5:.001:.5;
+z = exp(1i*2*pi*f);
+% H = (1-z.^(-4))./((1-z.^(-1)).*(1-0.5*z.^(-1)+0.25*z.^(-2)));
+H = (1+z.^(-1)+z.^(-2)+z.^(-3))./((1-0.5*z.^(-1)+0.25*z.^(-2)));
+subplot(2,1,1);
+plot(f,abs(H));
+title('Magnitude');
+xlabel('Normalized Frequency');
+subplot(2,1,2);
+plot(f,atan(imag(H)./real(H)));
+title('Phase');
+xlabel('Normalized Frequency');
