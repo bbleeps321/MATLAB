@@ -3,7 +3,7 @@
 % should not include the bias unit. Can also specify learning rate and
 % number of iterations to train for (K).
 % Returns the weights at each layer and the error on the training set.
-function [W,x,L] = TrainNN2(nodesPerLayer,Xtr,ytr,lambda,K,samplesPerUpdate,mu)%,postIterationScript)
+function [W,x,L] = TrainNN2(nodesPerLayer,Xtr,ytr,lambda,K,mu)%samplesPerUpdate,mu)%,postIterationScript)
 tic;
 % Initialize weights randomly.
 nLayers = length(nodesPerLayer);
@@ -12,11 +12,11 @@ W = cell(1,nLayers-1);
 h = waitbar(0,'Training Network...');
 
 % Default args.
-if exist('samplesPerUpdate','var')
-    samplesPerUpdate = min(samplesPerUpdate,N);
-else
-    samplesPerUpdate = 1;
-end
+% if exist('samplesPerUpdate','var')
+%     samplesPerUpdate = min(samplesPerUpdate,N);
+% else
+%     samplesPerUpdate = 1;
+% end
 if ~exist('mu','var')
     mu = 0;
 end
@@ -31,8 +31,12 @@ for i = 1:nLayers
     W{i+1} = rand(Nout,Nin);
 end
 L = zeros(1,K);
+idxs = randperm(size(Xtr,2));
+while length(idxs) < K
+    idxs = [idxs randperm(size(Xtr,2))];
+end
 for k = 1:K % Up to K iterations/updates
-    idx = randperm(size(Xtr,2),samplesPerUpdate);
+    idx = idxs(k);%,samplesPerUpdate);
     % Propagate forward.
     [~,x] = ComputeNN(W,Xtr(:,idx));
 
@@ -61,6 +65,7 @@ for k = 1:K % Up to K iterations/updates
     % TODO: Num weights > some threshold
     
     waitbar(k/K,h,'Training Network...');
+    fprintf('Finished iteration: %d, err=%f\n',k,L(k));
 end
 close(h);
 toc;
