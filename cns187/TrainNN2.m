@@ -31,12 +31,13 @@ for i = 1:nLayers
     W{i+1} = rand(Nout,Nin);
 end
 L = zeros(1,K);
-idxs = randperm(size(Xtr,2));
-while length(idxs) < K
-    idxs = [idxs randperm(size(Xtr,2))];
-end
+% idxs = randperm(size(Xtr,2));
+% while length(idxs) < K
+%     idxs = [idxs randperm(size(Xtr,2))];
+% end
 for k = 1:K % Up to K iterations/updates
-    idx = idxs(k);%,samplesPerUpdate);
+%     idx = idxs(k);%,samplesPerUpdate);
+    idx = randperm(size(Xtr,2));
     % Propagate forward.
     [~,x] = ComputeNN(W,Xtr(:,idx));
 
@@ -65,7 +66,12 @@ for k = 1:K % Up to K iterations/updates
     % TODO: Num weights > some threshold
     
     waitbar(k/K,h,'Training Network...');
-    fprintf('Finished iteration: %d, err=%f\n',k,L(k));
+    
+    if k > 3 && L(k) == L(k-1) && L(k) == L(k-2)
+        warning('Stuck at L=%f',L(k));
+        break;
+    end
+%     fprintf('Finished iteration: %d, err=%f\n',k,L(k));
 end
 close(h);
 toc;

@@ -19,15 +19,16 @@ test.dataVect = reshape(test.data,28*28,size(test.data,3));
 % end
 
 %%
-% rng(75);
-[W,x,L] = TrainNN2([784 5 1],train.dataVect,train.labels,.05,50000);
-% y = round(ComputeNN(W,Xtr));
+% rng(5);
+[W,x,L] = TrainNN2([784 2 10 1],train.dataVect,train.labels,.1,50000);
+x = ComputeNN(W,train.dataVect);
+y = round(x);
 
 %%
 load dataset_2;
 ytr = ytr';
-% rng(75);
-rand('seed',75);
+rng(75);
+% rand('seed',75);
 x1 = Xtr(:,find(ytr));
 x0 = Xtr(:,find(~ytr));
 
