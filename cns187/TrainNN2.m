@@ -3,7 +3,7 @@
 % should not include the bias unit. Can also specify learning rate and
 % number of iterations to train for (K).
 % Returns the weights at each layer and the error on the training set.
-function [W,x,L] = TrainNN2(nodesPerLayer,Xtr,ytr,lambda,K,mu)%samplesPerUpdate,mu)%,postIterationScript)
+function [W,x,acc] = TrainNN2(nodesPerLayer,Xtr,ytr,lambda,K,mu)%samplesPerUpdate,mu)%,postIterationScript)
 tic;
 % Initialize weights randomly.
 nLayers = length(nodesPerLayer);
@@ -28,9 +28,9 @@ for i = 1:nLayers
     else
         Nout = nodesPerLayer(i+1);
     end
-    W{i+1} = rand(Nout,Nin);
+    W{i+1} = 2*.05*rand(Nout,Nin)-.05;
 end
-L = zeros(1,K);
+acc = zeros(1,K);
 % idxs = randperm(size(Xtr,2));
 % while length(idxs) < K
 %     idxs = [idxs randperm(size(Xtr,2))];
@@ -42,7 +42,7 @@ for k = 1:K % Up to K iterations/updates
     [~,x] = ComputeNN(W,Xtr(:,idx));
 
     % Propagate back (first layer is special case) to get DLDW
-    d = cell(1,nLayers-1);
+    d = cell(1,nLayers);
     for i = nLayers:-1:2
         
         if i == nLayers % Special case for last layer.
@@ -50,7 +50,7 @@ for k = 1:K % Up to K iterations/updates
             gdot = x{i}.*(1-x{i});
             d{i} = (2*(x{i}-ytr(idx)).*gdot)';
             DLDW = (xAug.*repmat(d{i}',size(xAug,1),1))';
-            W{i} = W{i} - lambda*(sum(DLDW) + mu*sign(W{i}));
+            W{i} = W{i} - lambda*(sum(DLDW));% + mu*sign(W{i}));
         else
             xAug = [ones(1,size(x{i-1},2));x{i-1}];
             xAugI = [ones(1,size(x{i},2));x{i}];
@@ -59,21 +59,31 @@ for k = 1:K % Up to K iterations/updates
             d{i} = (d{i+1}*W{i+1}).*(gdot');
             d{i} = d{i}(:,2:end); % Remove bias delta.
             DLDW = (xAug*d{i})';
-            W{i} = W{i} - lambda*(DLDW + mu*sign(W{i}));
+            W{i} = W{i} - lambda*DLDW;
+%             xAug = [ones(1,size(x{i-1},2));x{i-1}];
+% %             xAugI = [ones(1,size(x{i},2));x{i}];
+%             gdot = x{i}.*(1-x{i});
+% 
+%             d{i} = (d{i+1}*W{i+1}(:,2:end)).*(gdot');
+% %             d{i} = d{i}(:,2:end); % Remove bias delta.
+%             DLDW = (xAug*d{i})';
+%             W{i} = W{i} - lambda*(DLDW);% + mu*sign(W{i}));
         end
     end
-    L(k) = sum((x{end}-ytr(idx)).^2); % MSE
+    acc(k) = 100*mean(round(x{end})==ytr(idx)); % MSE
     % TODO: Num weights > some threshold
     
     waitbar(k/K,h,'Training Network...');
     
-    if k > 3 && L(k) == L(k-1) && L(k) == L(k-2)
-        warning('Stuck at L=%f',L(k));
-        break;
+%     if k > 3 && acc(k) == acc(k-1) && acc(k) == acc(k-2)
+%         warning('Stuck in iteration %d at L=%f',k,acc(k));
+%         break;
+%     end
+    if mod(k,50) == 0
+        fprintf('Finished iteration: %d, acc=%.2f%%\n',k,acc(k));
     end
-%     fprintf('Finished iteration: %d, err=%f\n',k,L(k));
 end
 close(h);
 toc;
 
-L = L(1:find(L,1,'last'));
+acc = acc(1:find(acc,1,'last'));
