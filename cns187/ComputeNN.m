@@ -1,6 +1,6 @@
 function [y,x] = ComputeNN(W,X)
 
-nLayers = length(W)-1;
+nLayers = length(W);
 x = cell(1,nLayers);
 x{1} = X;
 s = cell(1,nLayers-1);
