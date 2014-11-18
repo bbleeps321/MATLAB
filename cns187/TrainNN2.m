@@ -27,6 +27,7 @@ if exist('optParams','var')
     end
     if isfield(optParams,'Xts') && isfield(optParams,'yts')
         accTs = zeros(1,K);
+        yts = optParams.yts;
         checkTestSet = 1;
     end
     if isfield(optParams,'wT');
@@ -37,7 +38,13 @@ if exist('optParams','var')
     end
     if isfield(optParams,'alpha')
         alpha = optParams.alpha;
-    end    
+    end
+    if isfield(optParams,'y0') && isfield(optParams,'y1')
+        ytr = remapLabels(ytr,optParams.y1);
+        if checkTestSet
+            yts = remapLabels(yts,optParams.y1);
+        end
+    end
 end
 
 if showProgress
@@ -88,16 +95,17 @@ for k = 1:K % Up to K iterations/updates
             Wtemp{i} = W{i}.*(abs(W{i}) > optParams.wT);
         end
         ypred = ComputeNN(Wtemp,Xtr(:,idx),alpha) > .5;
+        ypred = ypred
         accTr(k) = 100*mean(ypred==ytr(idx));
         if checkTestSet
             ypred = ComputeNN(Wtemp,optParams.Xts,alpha) > .5;
-            accTs(k) = 100*mean(ypred==optParams.yts);
+            accTs(k) = 100*mean(ypred==yts);
         end
     else
         accTr(k) = 100*mean((x{end} > .5)==ytr(idx));
         if checkTestSet
             ypred = ComputeNN(W,optParams.Xts,alpha) > .5;
-            accTs(k) = 100*mean(ypred==optParams.yts);
+            accTs(k) = 100*mean(ypred==yts);
         end
     end
     
@@ -128,3 +136,6 @@ if showProgress
     close(h);
 end
 toc;
+
+function y = remapLabels(y,y1)
+y = y==y1;
