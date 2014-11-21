@@ -4,7 +4,7 @@
 % should not include the bias unit. Can also specify learning rate and
 % number of iterations to train for (K).
 % Returns the weights at each layer and the error on the training set.
-function [W,x,accTr,accTs,nWts] = TrainNN2(nodesPerLayer,Xtr,ytr,lambda,K,optParams)
+function [W,x,errTr,errTs,nWts] = TrainNN2(nodesPerLayer,Xtr,ytr,lambda,K,optParams)
 tic;
 % Initialize weights randomly.
 nodesPerLayer = [size(Xtr,1) nodesPerLayer]; % Add input layer size.
@@ -26,7 +26,7 @@ if exist('optParams','var')
         mu = optParams.mu;
     end
     if isfield(optParams,'Xts') && isfield(optParams,'yts')
-        accTs = zeros(1,K);
+        errTs = ones(1,K);
         yts = optParams.yts;
         checkTestSet = 1;
     end
@@ -47,9 +47,9 @@ if exist('optParams','var')
     end
 end
 
-if showProgress
+% if showProgress
     h = waitbar(0,'Training Network...');
-end
+% end
 
 totalWeights = 0;
 for i = 1:nLayers-1
@@ -58,7 +58,7 @@ for i = 1:nLayers-1
     W{i+1} = 2*.05*rand(Nout,Nin)-.05;
     totalWeights = totalWeights + length(W{i+1});
 end
-accTr = zeros(1,K);
+errTr = ones(1,K);
 nWts = ones(1,K)*totalWeights;
 
 for k = 1:K % Up to K iterations/updates
@@ -95,17 +95,17 @@ for k = 1:K % Up to K iterations/updates
             Wtemp{i} = W{i}.*(abs(W{i}) > optParams.wT);
         end
         ypred = ComputeNN(Wtemp,Xtr(:,idx),alpha) > .5;
-        ypred = ypred
-        accTr(k) = 100*mean(ypred==ytr(idx));
+
+        errTr(k) = 1-mean(ypred==ytr(idx));
         if checkTestSet
             ypred = ComputeNN(Wtemp,optParams.Xts,alpha) > .5;
-            accTs(k) = 100*mean(ypred==yts);
+            errTs(k) = 1-mean(ypred==yts);
         end
     else
-        accTr(k) = 100*mean((x{end} > .5)==ytr(idx));
+        errTr(k) = 1-mean((x{end} > .5)==ytr(idx));
         if checkTestSet
             ypred = ComputeNN(W,optParams.Xts,alpha) > .5;
-            accTs(k) = 100*mean(ypred==yts);
+            errTs(k) = 1-mean(ypred==yts);
         end
     end
     
@@ -118,23 +118,24 @@ for k = 1:K % Up to K iterations/updates
         nWts(k) = count;
     end
     
+    waitbar(k/K,h,'Training Network...');
     if showProgress
-        waitbar(k/K,h,'Training Network...');
+        
 
-        % Print accuracy every 10 iterations.
-        if mod(k,10) == 0
+        % Print accuracy every 100 iterations.
+        if mod(k,100) == 0
             if checkTestSet
-                fprintf('Finished iteration: %d, accTr=%.2f%%, accTs=%.2f%%\n',k,accTr(k),accTs(k));
+                fprintf('Finished iteration: %d, errTr=%f, errTs=%f\n',k,errTr(k),errTs(k));
             else
-                fprintf('Finished iteration: %d, accTr=%.2f%%\n',k,accTr(k));
+                fprintf('Finished iteration: %d, errTr=%f\n',k,errTr(k));
             end
         end
     end
 end
 
-if showProgress
+% if showProgress
     close(h);
-end
+% end
 toc;
 
 function y = remapLabels(y,y1)
