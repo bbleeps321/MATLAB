@@ -12,104 +12,78 @@ params.y0 = 7; params.y1 = 9;
 [params.Xts,params.yts] = ExtractDataByLabel(test,params.y0,params.y1);
 params.ShowProgress = 0;
 
-%% 1.1. [2 4 1]
-[W,x,errTr,errTs] = TrainNN2([2 4 1],Xtr,ytr,lambda,Niter,params);
-figure; subplot(2,1,1); loglog(errTr,'b'); hold on; loglog(errTs,'r');
-title('Accuracy [2 4 1]');
-xlabel('log # training iterations'); ylabel('log error');
-legend('Training','Testing','Location','NorthWest');
+%% 1.1. [2 6 1]
+[W,x,errTr,errTs,nWts] = TrainNN2([2 6 1],Xtr,ytr,lambda,Niter,params);
+fprintf('errTr=%f, errTs=%f\n',errTr(end),errTs(end));
 save('hw6_1_1a');
-%% [2 2 1]
-[W,x,errTr,errTs] = TrainNN2([2 2 1],Xtr,ytr,lambda,Niter,params);
-subplot(2,1,2); loglog(errTr,'b'); hold on; loglog(errTs,'r');
-title('Accuracy [2 2 1]');
-xlabel('log # training iterations'); ylabel('log error');
-legend('Training','Testing');
-save('hw6_1_1b');
 
-%%
-[W,x,errTr,errTs] = TrainNN2([2 1],Xtr,ytr,lambda,Niter,params);
-% subplot(2,1,2); loglog(errTr,'b'); hold on; loglog(errTs,'r');
-% title('Accuracy [2 2 1]');
-% xlabel('log # training iterations'); ylabel('log error');
-% legend('Training','Testing');
-save('hw6_1_1c2');
+% [2 1]
+[W,x,errTr,errTs,nWts] = TrainNN2([2 1],Xtr,ytr,lambda,Niter,params);
+fprintf('errTr=%f, errTs=%f\n',errTr(end),errTs(end));
+save('hw6_1_1b');
 
 %% Plot number of weights with iterations for different mu.
 params.wT = 1e-3; params.ShowProgress = 0;
 params.mu = 0;
-[W,x,errTr,errTs,nWts] = TrainNN2([2 4 1],Xtr,ytr,lambda,Niter,params);
-figure(101); plot(nWts,'b'); hold on;
-figure(102); plot(errTr,'b'); hold on;
-figure(103); plot(errTs,'b'); hold on;
-fprintf('errTr=%f%%, errTs=%f%%\n',errTr(end),errTs(end));
+[W,x,errTr,errTs,nWts] = TrainNN2([2 6 1],Xtr,ytr,lambda,Niter,params);
+fprintf('errTr=%f, errTs=%f\n',errTr(end),errTs(end));
+save('hw6_1_2a');
 
-%% mu = .01
-params.mu = .01;
-[W,x,errTr,errTs,nWts] = TrainNN2([2 4 1],Xtr,ytr,lambda,Niter,params);
-% figure(101); plot(nWts,'r');
-% figure(102); plot(errTr,'r');
-% figure(103); plot(errTs,'r');
-fprintf('errTr=%f%%, errTs=%f%%\n',errTr(end),errTs(end));
-save('hw6_1_2b2');
+% mu = .001
+params.mu = .001; params.wT = 1e-3;
+[W,x,errTr,errTs,nWts] = TrainNN2([2 6 1],Xtr,ytr,lambda,Niter,params);
+fprintf('errTr=%f, errTs=%f\n',errTr(end),errTs(end));
+save('hw6_1_2b');
 
-%% mu = .1
-params.mu = .1;
-[W,x,errTr,errTs,nWts] = TrainNN2([2 4 1],Xtr,ytr,lambda,Niter,params);
-figure(101); plot(nWts,'r');
-figure(102); plot(errTr,'r');
-figure(103); plot(errTs,'r');
-fprintf('errTr=%f%%, errTs=%f%%\n',errTr(end),errTs(end));
+% mu = .01
+params.mu = .01; params.wT = 1e-3;
+[W,x,errTr,errTs,nWts] = TrainNN2([2 6 1],Xtr,ytr,lambda,Niter,params);
+fprintf('errTr=%f, errTs=%f\n',errTr(end),errTs(end));
 save('hw6_1_2c');
 
-%% mu = 1
-params.mu = 1;
-[W,x,errTr,errTs,nWts] = TrainNN2([2 4 1],Xtr,ytr,lambda,Niter,params);
-fprintf('errTr=%f%%, errTs=%f%%\n',errTr(end),errTs(end));
+% mu = .1
+params.mu = .1; params.wT = 1e-3;
+[W,x,errTr,errTs,nWts] = TrainNN2([2 6 1],Xtr,ytr,lambda,Niter,params);
+fprintf('errTr=%f, errTs=%f\n',errTr(end),errTs(end));
 save('hw6_1_2d');
-% figure(101); plot(nWts,'g');
-% xlabel('# training iterations'); ylabel(sprintf('Number weights magnitude > %.3f',params.wT));
-% title('Number of weights greater than threshold for different mu');
-% legend('\mu=0','\mu=.1','\mu=.3');
-% figure(102); plot(errTr,'g');
-% xlabel('# training iterations'); ylabel('log error');
-% title('Training accuracy');
-% legend('\mu=0','\mu=.1','\mu=.3');
-% figure(103); plot(errTs,'g');
-% xlabel('# training iterations'); ylabel('log error');
-% title('Testing accuracy');
-% legend('\mu=0','\mu=.1','\mu=.3');
 
 %% Plot performance with different horizontal scaling on logistic function.
-params.mu = 0; params.wT = 0; params.ShowProgress = 0; params.removeWeights = 0;
-params.alpha = 1;
-[W,x,errTr,errTs,nWts] = TrainNN2([2 10 1],Xtr,ytr,lambda,Niter,params);
-figure(201); plot(errTr,'b'); hold on;
-figure(202); plot(errTs,'b'); hold on;
+
+% alpha = .1
+params.alpha = .1;
+[W,x,errTr,errTs] = TrainNN2([2 6 1],Xtr,ytr,lambda,Niter,params);
+fprintf('errTr=%f, errTs=%f\n',errTr(end),errTs(end));
+save('hw6_2_1b');
+
+% alpha = .5
+params.alpha = .5;
+[W,x,errTr,errTs] = TrainNN2([2 6 1],Xtr,ytr,lambda,Niter,params);
+fprintf('errTr=%f, errTs=%f\n',errTr(end),errTs(end));
+save('hw6_2_1c');
 
 % alpha = .9
 params.alpha = .9;
-[W,x,errTr,errTs] = TrainNN2([2 10 1],Xtr,ytr,lambda,Niter,params);
-figure(201); plot(errTr,'r'); hold on;
-figure(202); plot(errTs,'r'); hold on;
+[W,x,errTr,errTs] = TrainNN2([2 6 1],Xtr,ytr,lambda,Niter,params);
+fprintf('errTr=%f, errTs=%f\n',errTr(end),errTs(end));
+save('hw6_2_1d');
 
 % alpha = 1.1
 params.alpha = 1.1;
-[W,x,errTr,errTs] = TrainNN2([2 10 1],Xtr,ytr,lambda,Niter,params);
-figure(201); plot(errTr,'g'); hold on;
-figure(202); plot(errTs,'g'); hold on;
+[W,x,errTr,errTs] = TrainNN2([2 6 1],Xtr,ytr,lambda,Niter,params);
+fprintf('errTr=%f, errTs=%f\n',errTr(end),errTs(end));
+save('hw6_2_1e');
 
 % alpha = 1.5
+params.alpha = 1.5;
+[W,x,errTr,errTs] = TrainNN2([2 6 1],Xtr,ytr,lambda,Niter,params);
+fprintf('errTr=%f, errTs=%f\n',errTr(end),errTs(end));
+save('hw6_2_1f');
+
+% alpha = 2
 params.alpha = 2;
-[W,x,errTr,errTs] = TrainNN2([2 10 1],Xtr,ytr,lambda,Niter,params);
-figure(201); plot(errTr,'k'); hold on;
-xlabel('# training iterations'); ylabel('log error');
-title('Training accuracy with different thresholding functions');
-legend('\alpha = 1','\alpha = .9','\alpha = 1.1','\alpha = 2', 'Location','NorthWest');
-figure(202); plot(errTs,'k'); hold on;
-xlabel('# training iterations'); ylabel('log error');
-title('Testing accuracy with different thresholding functions');
-legend('\alpha = 1','\alpha = .9','\alpha = 1.1','\alpha = 2', 'Location','NorthWest');
+[W,x,errTr,errTs] = TrainNN2([2 6 1],Xtr,ytr,lambda,Niter,params);
+fprintf('errTr=%f, errTs=%f\n',errTr(end),errTs(end));
+save('hw6_2_1g');
 
 %% Find pair of digits with lowest test accuracy.
 clear all; close all;
@@ -117,23 +91,25 @@ clear all; close all;
 train = load('mnist_train'); % Load data
 test = load('mnist_test');
 
-Ntr = 2*300; % 300 training points.
+Ntr = 2*500; % 500 training points.
 Niter = 1000;
+params.alpha = 1;
+lambda = .001;
 params.mu = 0; % No regularization
 params.ShowProgress = 0; % Don't show progress to speed things up.
 
 % Iterate through all pairwise combinations of digits.
 digits = 0:9;
-errTr = zeros(length(digits));
-errTs = zeros(length(digits));
+ErrTr = zeros(length(digits));
+ErrTs = zeros(length(digits));
 h = waitbar(0,'Checking pairwise combinations...');
 for i = 1:length(digits)
-    for j = (i+1):length(digits)
+    for j = 1:length(digits)
         y0 = digits(i);
         y1 = digits(j);
         if y0==y1 % If twin digits, accuracy of 1.
-            errTr(i,j) = 1;
-            errTs(i,j) = 1;
+            ErrTr(i,j) = 1;
+            ErrTs(i,j) = 1;
             continue;
         end
         % Extract training and testing data matching these pair of digits.
@@ -145,12 +121,16 @@ for i = 1:length(digits)
         params.y1 = y1;
         fprintf('Testing %d vs %d: ',y0,y1);
         
-        [~,~,errTr,errTs,~] = TrainNN2([2 10 1],Xtr,ytr,lambda,Niter,params);
-        errTr(i,j) = errTr(end);
-        errTs(i,j) = errTs(end);
+        [~,~,errTr,errTs,~] = TrainNN2([2 6 1],Xtr,ytr,lambda,Niter,params);
+        
+        ErrTr(i,j) = min(errTr(end),errTs(end));
+        ErrTs(i,j) = max(errTr(end),errTs(end));
         fprintf('\terrTr = %f, errTs = %f\n',errTr(end),errTs(end));
+        figure; plot(errTr); hold all; plot(errTs);
+        title(sprintf('%d vs %d',y0,y1));
         
         waitbar(i*j/(length(digits)^2),h,'Checking pairwise combinations...');
     end
+    save(sprintf('hw6_2_2_%d',i-1),'ErrTr','ErrTs');
 end
 close(h);
