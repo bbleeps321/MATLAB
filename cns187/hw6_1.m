@@ -7,7 +7,7 @@ Niter = 1e4;
 lambda = 5e-4;
 
 % Reduce training and test set to only 1's and 7's.
-params.y0 = 1; params.y1 = 7;
+params.y0 = 7; params.y1 = 9;
 [Xtr,ytr] = ExtractDataByLabel(train,params.y0,params.y1,Ntr);
 [params.Xts,params.yts] = ExtractDataByLabel(test,params.y0,params.y1);
 params.ShowProgress = 0;
@@ -18,47 +18,67 @@ figure; subplot(2,1,1); loglog(errTr,'b'); hold on; loglog(errTs,'r');
 title('Accuracy [2 4 1]');
 xlabel('log # training iterations'); ylabel('log error');
 legend('Training','Testing','Location','NorthWest');
-
+save('hw6_1_1a');
 %% [2 2 1]
 [W,x,errTr,errTs] = TrainNN2([2 2 1],Xtr,ytr,lambda,Niter,params);
 subplot(2,1,2); loglog(errTr,'b'); hold on; loglog(errTs,'r');
 title('Accuracy [2 2 1]');
 xlabel('log # training iterations'); ylabel('log error');
 legend('Training','Testing');
+save('hw6_1_1b');
+
+%%
+[W,x,errTr,errTs] = TrainNN2([2 1],Xtr,ytr,lambda,Niter,params);
+% subplot(2,1,2); loglog(errTr,'b'); hold on; loglog(errTs,'r');
+% title('Accuracy [2 2 1]');
+% xlabel('log # training iterations'); ylabel('log error');
+% legend('Training','Testing');
+save('hw6_1_1c2');
 
 %% Plot number of weights with iterations for different mu.
 params.wT = 1e-3; params.ShowProgress = 0;
 params.mu = 0;
-[W,x,errTr,errTs,nWts] = TrainNN2([2 10 1],Xtr,ytr,lambda,Niter,params);
+[W,x,errTr,errTs,nWts] = TrainNN2([2 4 1],Xtr,ytr,lambda,Niter,params);
 figure(101); plot(nWts,'b'); hold on;
 figure(102); plot(errTr,'b'); hold on;
 figure(103); plot(errTs,'b'); hold on;
 fprintf('errTr=%f%%, errTs=%f%%\n',errTr(end),errTs(end));
 
-% mu = .1
+%% mu = .01
+params.mu = .01;
+[W,x,errTr,errTs,nWts] = TrainNN2([2 4 1],Xtr,ytr,lambda,Niter,params);
+% figure(101); plot(nWts,'r');
+% figure(102); plot(errTr,'r');
+% figure(103); plot(errTs,'r');
+fprintf('errTr=%f%%, errTs=%f%%\n',errTr(end),errTs(end));
+save('hw6_1_2b2');
+
+%% mu = .1
 params.mu = .1;
-[W,x,errTr,errTs,nWts] = TrainNN2([2 10 1],Xtr,ytr,lambda,Niter,params);
+[W,x,errTr,errTs,nWts] = TrainNN2([2 4 1],Xtr,ytr,lambda,Niter,params);
 figure(101); plot(nWts,'r');
 figure(102); plot(errTr,'r');
 figure(103); plot(errTs,'r');
 fprintf('errTr=%f%%, errTs=%f%%\n',errTr(end),errTs(end));
+save('hw6_1_2c');
 
-% mu = .3
-params.mu = .3;
-[W,x,errTr,errTs,nWts] = TrainNN2([2 10 1],Xtr,ytr,lambda,Niter,params);
+%% mu = 1
+params.mu = 1;
+[W,x,errTr,errTs,nWts] = TrainNN2([2 4 1],Xtr,ytr,lambda,Niter,params);
 fprintf('errTr=%f%%, errTs=%f%%\n',errTr(end),errTs(end));
-figure(101); plot(nWts,'g');
-xlabel('# training iterations'); ylabel(sprintf('Number weights magnitude > %.3f',params.wT));
-title('Number of weights greater than threshold for different mu');
-legend('\mu=0','\mu=.1','\mu=.3');
-figure(102); plot(errTr,'g');
-xlabel('# training iterations'); ylabel('log error');
-title('Training accuracy');
-legend('\mu=0','\mu=.1','\mu=.3');
-figure(103); plot(errTs,'g');
-xlabel('# training iterations'); ylabel('log error');
-title('Testing accuracy');
-legend('\mu=0','\mu=.1','\mu=.3');
+save('hw6_1_2d');
+% figure(101); plot(nWts,'g');
+% xlabel('# training iterations'); ylabel(sprintf('Number weights magnitude > %.3f',params.wT));
+% title('Number of weights greater than threshold for different mu');
+% legend('\mu=0','\mu=.1','\mu=.3');
+% figure(102); plot(errTr,'g');
+% xlabel('# training iterations'); ylabel('log error');
+% title('Training accuracy');
+% legend('\mu=0','\mu=.1','\mu=.3');
+% figure(103); plot(errTs,'g');
+% xlabel('# training iterations'); ylabel('log error');
+% title('Testing accuracy');
+% legend('\mu=0','\mu=.1','\mu=.3');
 
 %% Plot performance with different horizontal scaling on logistic function.
 params.mu = 0; params.wT = 0; params.ShowProgress = 0; params.removeWeights = 0;
