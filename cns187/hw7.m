@@ -10,9 +10,11 @@ figure; imshow(raw); title('Raw image');
 
 % Plot singular values.
 figure; loglog(diag(S));
-title('Singular values');
+title('Sorted singular values');
+xlabel('Singular value index');
+ylabel('Singular value');
 
-% Show first 64 components.
+%% Show first 64 components.
 figure;
 for i=1:64
     subplot(sz,sz,i);
@@ -63,7 +65,9 @@ figure; imshow(raw); title('Raw image');
 
 % Plot singular values.
 figure; loglog(diag(S));
-title('Singular values');
+title('Sorted singular values');
+xlabel('Singular value index');
+ylabel('Singular value');
 
 % Show first 64 components.
 figure;
