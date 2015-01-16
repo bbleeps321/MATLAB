@@ -61,9 +61,23 @@ legend('Dataset 1','Dataset 2','Dataset 3');
 data = dlmread('question2data.txt','\t');
 X = data(:,1:9);
 Y = data(:,10);
-lambda = 0:100:50000;
+
+%% Lasso
+lambda = 0:.1:5;
+W = zeros(9,length(lambda));
+for i = 1:length(lambda)
+    W(:,i) = lasso(X,Y,'Lambda',lambda(i));
+end
+
+figure;
+plot(lambda,W);
+title('Weights from Lasso Regularization vs \lambda');
+xlabel('\lambda'); ylabel('Weights');
+legend('w_1','w_2','w_3','w_4','w_5','w_6','w_7','w_8','w_9');
+
 
 %% Ridge
+lambda = 0:100:50000;
 W = zeros(9,length(lambda));
 for i = 1:length(lambda)
     W(:,i) = ridge(Y,X,lambda(i));
