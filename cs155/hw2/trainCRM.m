@@ -1,5 +1,6 @@
 function trainCRM(states,obs)
 
+lambda = 1e-3;
 nObs = length(obs);
 nStates = max(states);
 nObsTypes = max(obs);
@@ -19,8 +20,8 @@ end
 % Random initial weights (positive and negative).
 w = 2*rand(nStates*nObsTypes+(nStates+1)^2,1)-1;
 dw = 1000;
-
-while norm(dw) > .01
+count = 0;
+while norm(dw) > 10
     % Compute G's and also Z(w).
     G = cell(1,nObs);
 %     G_1M = 1; % Cumulative product of G's.
@@ -56,12 +57,40 @@ while norm(dw) > .01
 
     % alpha [5 2191]
     % Compute gradient and apply step.
-    E = 0; % Expectation
+    dZw = 0;
+    dF = 0;
     for j = 1:nObs
+        % dF
+        y = states(j) + 1; % State 1 is start state so add 1
+        if j == 1
+            yprev = 1; % start state.
+        else
+            yprev = states(j-1)+1;
+        end
+        dF = dF + [phi1(:,j); phi2(y,yprev,nStates)];
         
+        % dZw
+        denom = sum(alpha(:,j)'*G{j}*beta(:,j));
+        for a = 1:nStates+1
+            bEnd = nStates + 1;
+            if j == 1 bEnd = 1; end;
+            for b = 1:bEnd
+                phi = [phi1(:,j); phi2(a,b,nStates)];
+                % (G(b,a)?)
+                dZw = dZw + alpha(a,j)*G{j}(a,b)*beta(b,j)/denom * phi;
+            end
+        end
     end
-    F = %-sum of all phi's
-    dw = 0;
+    
+    dw = -dF + dZw;
+    
+    w = w - lambda*(-dF+dZw);
+    
+    count = count + 1;
+    if mod(count,5) == 0
+        fprintf('%f\n',norm(dw));
+    end
+%     dw = 0;
 end
 
 %% Calculate phi2 (transition vector).
@@ -90,7 +119,7 @@ else
     end
 end
 
-% %% Calculate Gij = Gj*Gj-1*...Gi.
+%% Calculate Gij = Gj*Gj-1*...Gi.
 % function G = Gij(i,j,w,p1,nStates)
 % G = Gj(i);
 % for i = (i+1):j
