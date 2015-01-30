@@ -17,6 +17,7 @@ for i = 2:nObs
     y = states(i);
     A(yprev,y) = A(yprev,y)+1/stateCounts(yprev);
 end
+A = A';
 
 % Output emission matrix
 O = zeros(nStates,nObsTypes);

@@ -1,4 +1,4 @@
-function trainCRM(states,obs)
+function w = trainCRM(states,obs)
 
 lambda = 1e-3;
 nObs = length(obs);
@@ -6,22 +6,15 @@ nStates = max(states);
 nObsTypes = max(obs);
 
 % Create the feature vectors phi1 (each column is a feature)
-phi1 = zeros(nStates*nObsTypes,nObs);
-for i = 1:nObs
-    x = obs(i);
-    y = states(i)+1; % State 1 is Start
-    
-    % Compute p1, setting index matching state y, observation x to 1.
-    phi1((y-2)*nStates + x,i) = 1; % Set directly
-end
+phi1 = constructPhi1(states,obs);
 
 %% Perform gradient descent.
 
 % Random initial weights (positive and negative).
-w = 2*rand(nStates*nObsTypes+(nStates+1)^2,1)-1;
+w = rand((nStates+1)*nObsTypes+(nStates+1)^2,1);
 dw = 1000;
 count = 0;
-while norm(dw) > 10
+while norm(dw) > 2
     % Compute G's and also Z(w).
     G = cell(1,nObs);
 %     G_1M = 1; % Cumulative product of G's.
@@ -93,14 +86,6 @@ while norm(dw) > 10
 %     dw = 0;
 end
 
-%% Calculate phi2 (transition vector).
-function p2 = phi2(y,yprev,nStates)
-% p2 = zeros(nStates*(nStates+1),1);
-p2 = zeros((nStates+1)^2,1);
-% y = y; % y=1 is start state
-% yprev = yprev+1;
-p2((y-1)*(nStates+1) + yprev) = 1;
-
 %% Calculate Gj.
 function G = Gj(j,w,p1,nStates)
 if j == 1
@@ -118,31 +103,3 @@ else
         end
     end
 end
-
-%% Calculate Gij = Gj*Gj-1*...Gi.
-% function G = Gij(i,j,w,p1,nStates)
-% G = Gj(i);
-% for i = (i+1):j
-%     G = Gj(i+1)*G;
-% end
-    
-
-% % First count number of observations in each state.
-% stateCounts = zeros(1,nStates);
-% for i = 1:nStates
-%     stateCounts(i) = sum(states==i);
-% end
-% 
-% % Transition matrix
-% A = zeros(nStates,nStates);
-% for i = 2:nObs
-%     yprev = states(i-1);
-%     y = states(i);
-%     A(yprev,y) = A(yprev,y)+1/stateCounts(yprev);
-% end
-% 
-% % Output emission matrix
-% O = zeros(nStates,nObsTypes);
-% for i = 1:nObs
-%     O(states(i),obs(i)) = O(states(i),obs(i)) + 1/stateCounts(states(i));
-% end

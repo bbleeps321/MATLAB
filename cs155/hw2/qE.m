@@ -4,6 +4,10 @@ data = readRon();
 %% EM step
 [A,O] = trainHMM(data.mood,data.genre)
 
+
+%% Test
+[ypredHMM,~] = viterbiForwardDP(data.genre-1,A,O);
+
 %% 5-fold CV for error estimate
 
 % partIdx = [1,438;...
