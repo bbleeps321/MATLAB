@@ -10,8 +10,8 @@ save('resultsCRM3','w');
 
 %% Test
 % -1 so states correspond to read in data (with 0 being start state).
-ypred = predictCRM(w,data.mood,data.genre)-1;
-
+ypredCRM = predictCRM(w,data.mood,data.genre)-1;
+mean(ypredCRM == data.mood')
 
 %% EM step with 5-fold CV
 partIdx = [1,438;...

@@ -4,7 +4,7 @@ nObs = length(obs);
 nStates = max(states);
 nObsTypes = max(obs);
 
-p = zeros((nStates+1)*nObsTypes,nObs);
+p = zeros(nStates*nObsTypes,nObs);
 for i = 1:nObs
     x = obs(i);
     y = states(i)+1; % State 1 is Start

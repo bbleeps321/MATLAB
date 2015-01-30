@@ -5,22 +5,20 @@
 % X is observed sequence, T is state transition matrix, O is output emission
 % matrix. For T and O the current states are specified along the rows while
 % the next state/outputs are specified along the columns.
-function [stateSeq,pTot] = viterbiForwardDP(X,T,O)
+function stateSeq = viterbiForwardDP2(X,T,O)
 
 nStates = size(T,1);
 L = length(X);
 V = zeros(nStates,L); % Store probabilities (Viterbi).
-P = zeros(nStates,L); % Store total probabilities (Forward).
-% seq = cell(1,nStates); % Best state sequence for each end state.
+seq = cell(1,nStates); % Best state sequence for each end state.
 
 for i = 1:L % Index of sequence
     obsIdx = X(i)+1; % Index of this observation
     if i == 1 % Base case for sequence length 1
         for s = 1:nStates
             p = 1/nStates; % Assume uniform prob of starting in each state.
-            V(s,1) = O(s,obsIdx)*p;
-            P(s,1) = O(s,obsIdx)*p;
-%             seq{s} = s;
+            V(s,1) = log(O(s,obsIdx)*p);
+            seq{s} = s;
         end
     else % For sequence length > 1
         % Compute probabilities from each possible previous state. Taking
@@ -28,16 +26,13 @@ for i = 1:L % Index of sequence
         for s = 1:nStates
             Vtemp = zeros(1,nStates); % Viterbi for each previous state.
             for sPrev = 1:nStates % Find max and sum
-                Vtemp(sPrev) = O(s,obsIdx)*T(sPrev,s)*V(sPrev,i-1);
+                Vtemp(sPrev) = log(O(s,obsIdx)*T(sPrev,s)) + V(sPrev,i-1);
             end
             [V(s,i),bestState] = max(Vtemp);
-            P(s,i) = sum(Vtemp);
-%             seq{s} = [seq{s} bestState];
+            seq{s} = [seq{s} bestState];
         end
     end
 end
 
 % For final answer, return max for Viterbi, or sum for Forward.
-% [~,bestEndState] = max(V(:,end));
 [~,stateSeq] = max(V);
-pTot = sum(P(:,end));

@@ -17,10 +17,17 @@ for i = 2:nObs
     y = states(i);
     A(yprev,y) = A(yprev,y)+1/stateCounts(yprev);
 end
-A = A';
+
+% for i = 1:nStates
+%     A(i,:) = A(i,:)/sum(A(i,:));
+% end
 
 % Output emission matrix
 O = zeros(nStates,nObsTypes);
 for i = 1:nObs
     O(states(i),obs(i)) = O(states(i),obs(i)) + 1/stateCounts(states(i));
 end
+
+% for i = 1:nStates
+%     O(i,:) = O(i,:)/sum(O(i,:));
+% end

@@ -5,9 +5,17 @@ data = readRon();
 [A,O] = trainHMM(data.mood,data.genre)
 
 
-%% Test
-[ypredHMM,~] = viterbiForwardDP(data.genre-1,A,O);
+% Test
+ypredHMM = viterbiForwardDP2(data.genre-1,A,O);
+mean(ypredHMM==data.mood')
 
+%%
+partIdx = floor(4/5*length(data.mood));
+[A,O] = trainHMM(data.mood(1:partIdx),data.genre(1:partIdx));
+ypredHMMIn = viterbiForwardDP(data.genre(1:partIdx)-1,A,O);
+mean(ypredHMMIn == data.mood(1:partIdx)')
+ypredHMMOut = viterbiForwardDP(data.genre(partIdx+1:end)-1,A,O);
+mean(ypredHMMOut == data.mood(partIdx+1:end)')
 %% 5-fold CV for error estimate
 
 % partIdx = [1,438;...

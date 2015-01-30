@@ -11,7 +11,7 @@ phi1 = constructPhi1(states,obs);
 %% Perform gradient descent.
 
 % Random initial weights (positive and negative).
-w = rand((nStates+1)*nObsTypes+(nStates+1)^2,1);
+w = zeros((nStates)*nObsTypes+(nStates+1)^2,1);
 dw = 1000;
 count = 0;
 while norm(dw) > 2
@@ -95,7 +95,7 @@ if j == 1
     end
     G = exp(w'*phi_j)'; % Make column vector.
 else
-    % prev state in columns, next state in rows ???
+    % prev state in columns, next state in rows : yes
     G = zeros(nStates+1,nStates+1);
     for a = 1:nStates+1
         for b = 1:nStates+1
