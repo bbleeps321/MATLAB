@@ -17,7 +17,7 @@ for i = 1:L % Index of sequence
     if i == 1 % Base case for sequence length 1
         for s = 1:nStates
             p = 1/nStates; % Assume uniform prob of starting in each state.
-            V(s,1) = log(O(s,obsIdx)*p);
+            V(s,1) = log(O(s,obsIdx)*p); % Logs to prevent over/underflow.
             seq{s} = s;
         end
     else % For sequence length > 1
@@ -26,10 +26,9 @@ for i = 1:L % Index of sequence
         for s = 1:nStates
             Vtemp = zeros(1,nStates); % Viterbi for each previous state.
             for sPrev = 1:nStates % Find max and sum
-                Vtemp(sPrev) = log(O(s,obsIdx)*T(sPrev,s)) + V(sPrev,i-1);
+                Vtemp(sPrev) = log(O(s,obsIdx)*T(sPrev,s))+V(sPrev,i-1);
             end
-            [V(s,i),bestState] = max(Vtemp);
-            seq{s} = [seq{s} bestState];
+            V(s,i) = max(Vtemp);
         end
     end
 end

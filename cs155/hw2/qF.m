@@ -5,30 +5,22 @@ data = readRon();
 tic;
 w = trainCRM(data.mood,data.genre);
 toc;
+comment = 'New setup, denom = 1? (not 25). SLower calc of dZw. No a=0 in phi1';
+save('resultsCRMNew4','w','comment');
 
-save('resultsCRM3','w');
-
-%% Test
-% -1 so states correspond to read in data (with 0 being start state).
-ypredCRM = predictCRM(w,data.mood,data.genre)-1;
+% Test
+ypredCRM = predictCRM(w,data.genre,4);
 mean(ypredCRM == data.mood')
 
-%% EM step with 5-fold CV
-partIdx = [1,438;...
-           439,2*438;...
-           2*438+1,3*438;...
-           3*438+1,4*438;...
-           4*438+1,data.N];
-for i = 1:5
-    idx = partIdx(i,1):partIdx(i,2);
-    testIdx = zeros(1,data.N);
-    testIdx(idx) = ones(1,length(idx));
-    testIdx = 1:data.N .* testIdx;
-    trainIdx = 1:data.N .* ~testIdx;
-    moodTs = data.mood(testIdx);
-    genreTs = data.genre(testIdx);
-    moodTr = data.mood(~testIdx);
-    genreTr = data.genre(~testIdx);
-    
-    [A,O] = trainHMM(moodTr,genreTr);
-end
+%%
+NStates = 4;
+partIdx = floor(4/5*length(data.mood));
+tic;
+w = trainCRM(data.mood(1:partIdx),data.genre(1:partIdx));
+toc;
+ypredCRMIn = predictCRM(w,data.genre(1:partIdx),NStates);
+mean(ypredCRMIn == data.mood(1:partIdx)')
+ypredCRMOut = predictCRM(w,data.genre(partIdx+1:end),NStates);
+mean(ypredCRMOut == data.mood(partIdx+1:end)')
+comment = 'Works! Train on first 4/5 of data.';
+save('resultsCRM','w','comment');
