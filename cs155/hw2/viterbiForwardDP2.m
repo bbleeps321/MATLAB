@@ -5,6 +5,8 @@
 % X is observed sequence, T is state transition matrix, O is output emission
 % matrix. For T and O the current states are specified along the rows while
 % the next state/outputs are specified along the columns.
+
+%% Uses log probabilities to prevent underflow.
 function stateSeq = viterbiForwardDP2(X,T,O)
 
 nStates = size(T,1);

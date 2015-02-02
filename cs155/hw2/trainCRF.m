@@ -12,15 +12,11 @@ nObsTypes = max(obs);
 
 % Random initial weights (positive and negative).
 w = zeros((nStates)*nObsTypes+(nStates+1)^2,1);
-dw = 1000;
 count = 0;
-% while norm(dw) > 2
+
 while count < 10;
     % Compute G's and also Z(w).
     G = constructG(w,obs,nStates);
-%     for j = 1:nObs
-%         G{j} = Gj(j,w,obs(j),nStates,nObsTypes);
-%     end
     
     % Compute alpha (forward).
     for j = 1:nObs
@@ -55,40 +51,27 @@ while count < 10;
     % dZw
     dZw = 0;
     % Pairwise combinations of a and b
-    [a,b] = meshgrid(1:nStates+1,1:nStates+1);
-    a = a(:); b = b(:);
-    numPairs = length(a);
     for j = 2:nObs        
         denom = sum(alpha(:,j-1)'*G{j}*beta(:,j));
-        
-        % faster?
-%         phi = [phi1(a,obs(j)*ones(numPairs,1),nStates,nObsTypes);...
-%             phi2(a,b,nStates)];
-%         factor = alpha(a,j-1).*(G{j}(a,b)*beta(b,j))/denom;
-%         factor = repmat(factor',size(phi,1),1);
-%         dZw = dZw + sum(factor .* phi,2);
-        
-        % slower?
+
         for a = 2:nStates+1
             bEnd = nStates + 1;
-%             if j == 1 bEnd = 1; end; % First G is just column vector
             for b = 1:bEnd
                 phi = [phi1(a,obs(j),nStates,nObsTypes); phi2(a,b,nStates)];
-                % (G(b,a)?)
                 dZw = dZw + alpha(a,j-1)*G{j}(a,b)*beta(b,j)/denom * phi;
             end
         end
     end
     
-    dw = -dF + dZw;
-    
-    w = w - lambda*(-dF+dZw);
+    dw = -dF + dZw;    
+    w = w - lambda*(dw);
     
     count = count + 1;
+    
+    % Print out dw size just to keep track of progress.
     if mod(count,5) == 0
         fprintf('%f\n',norm(dw));
     end
-%     dw = 0;
 end
 
 %% Calculate Gj.

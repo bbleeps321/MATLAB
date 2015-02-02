@@ -11,7 +11,6 @@ nStates = size(T,1);
 L = length(X);
 V = zeros(nStates,L); % Store probabilities (Viterbi).
 P = zeros(nStates,L); % Store total probabilities (Forward).
-% seq = cell(1,nStates); % Best state sequence for each end state.
 
 for i = 1:L % Index of sequence
     obsIdx = X(i)+1; % Index of this observation
@@ -20,7 +19,6 @@ for i = 1:L % Index of sequence
             p = 1/nStates; % Assume uniform prob of starting in each state.
             V(s,1) = O(s,obsIdx)*p;
             P(s,1) = O(s,obsIdx)*p;
-%             seq{s} = s;
         end
     else % For sequence length > 1
         % Compute probabilities from each possible previous state. Taking
@@ -32,12 +30,10 @@ for i = 1:L % Index of sequence
             end
             [V(s,i),bestState] = max(Vtemp);
             P(s,i) = sum(Vtemp);
-%             seq{s} = [seq{s} bestState];
         end
     end
 end
 
 % For final answer, return max for Viterbi, or sum for Forward.
-% [~,bestEndState] = max(V(:,end));
 [~,stateSeq] = max(V);
 pTot = sum(P(:,end));
