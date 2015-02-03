@@ -15,7 +15,7 @@ mean(ypredCRF == data.mood')
 NStates = 4;
 partIdx = floor(4/5*length(data.mood));
 tic;
-w = trainCRF(data.mood(1:partIdx),data.genre(1:partIdx));
+w = trainCRF(data.mood(1:partIdx),data.genre(1:partIdx))
 toc;
 ypredCRFIn = predictCRF(w,data.genre(1:partIdx),NStates);
 mean(ypredCRFIn == data.mood(1:partIdx)')
