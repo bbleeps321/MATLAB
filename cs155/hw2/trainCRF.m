@@ -1,16 +1,13 @@
-function w = trainCRM(states,obs)
+function w = trainCRF(states,obs)
 
 lambda = 1e-5;
 nObs = length(obs);
 nStates = max(states);
 nObsTypes = max(obs);
 
-% Create the feature vectors phi1 (each column is a feature)
-% phi1 = constructPhi1(states,obs);
-
 %% Perform gradient descent.
 
-% Random initial weights (positive and negative).
+% Zero initial weights.
 w = zeros((nStates)*nObsTypes+(nStates+1)^2,1);
 count = 0;
 

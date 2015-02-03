@@ -1,6 +1,5 @@
 %% Computes most likely state sequence resulting in observed outputs
-% (Viterbi) while also finding the probability the HMM will produce the
-% sequence (forward).
+% (Viterbi).
 %
 % X is observed sequence, T is state transition matrix, O is output emission
 % matrix. For T and O the current states are specified along the rows while
@@ -24,10 +23,10 @@ for i = 1:L % Index of sequence
         end
     else % For sequence length > 1
         % Compute probabilities from each possible previous state. Taking
-        % the max (for Viterbi) and the sum (for Forward).
+        % the max (for Viterbi).
         for s = 1:nStates
             Vtemp = zeros(1,nStates); % Viterbi for each previous state.
-            for sPrev = 1:nStates % Find max and sum
+            for sPrev = 1:nStates % Find max.
                 Vtemp(sPrev) = log(O(s,obsIdx)*T(sPrev,s))+V(sPrev,i-1);
             end
             V(s,i) = max(Vtemp);
@@ -35,5 +34,5 @@ for i = 1:L % Index of sequence
     end
 end
 
-% For final answer, return max for Viterbi, or sum for Forward.
+% For final answer, return max for Viterbi.
 [~,stateSeq] = max(V);
