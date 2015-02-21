@@ -11,7 +11,7 @@ nObsTypes = max(obs);
 w = zeros((nStates)*nObsTypes+(nStates+1)^2,1);
 count = 0;
 
-while count < 10;
+while count < 10; % 10 iterations enough but this could be adjusted
     % Compute G's and also Z(w).
     G = constructG(w,obs,nStates);
     
